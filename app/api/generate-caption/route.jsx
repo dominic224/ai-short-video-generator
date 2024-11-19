@@ -3,18 +3,18 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { audioFilUrl } = await req.json();
+    const { audioFileUrl } = await req.json();
     const client = new AssemblyAI({
       apiKey: process.env.CAPTION_API,
     });
 
-    const audioUrl = audioFilUrl;
+    const audioUrl = audioFileUrl;
 
-    const config = {
-      audio_url: audioUrl,
+    const data = {
+      audio: audioUrl,
     };
 
-    const transcript = await client.transcripts.transcribe(config);
+    const transcript = await client.transcripts.transcribe(data);
     console.log(transcript.words);
     return NextResponse.json({ result: transcript.words });
   } catch (e) {
