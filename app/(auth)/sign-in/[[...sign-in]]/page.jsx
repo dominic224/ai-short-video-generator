@@ -10,6 +10,7 @@ export default function Page() {
           width={500}
           height={500}
           className="w-full object-contain"
+          alt=""
         />
       </div>
       <div className="flex justify-center items-center h-screen">

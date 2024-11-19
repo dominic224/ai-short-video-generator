@@ -37,6 +37,7 @@ function SelectStyle({ onUserSelect }) {
             className={`relative hover:scale-105 transition-all cursor-pointer rounded-xl ${
               selectedOption === item.name && "border-4 border-primary"
             }`}
+            key={index}
           >
             <Image
               src={item.image}
@@ -47,6 +48,7 @@ function SelectStyle({ onUserSelect }) {
                 setSelectedOption(item.name);
                 onUserSelect("imageStyle", item.name);
               }}
+              alt=""
             />
             <h2 className="absolute p-1 bg-black bottom-0 w-full text-white text-center rounded-b-lg">
               {item.name}

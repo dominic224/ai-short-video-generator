@@ -6,11 +6,16 @@ import SelectDuration from "./_components/SelectDuration";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import CustomLoading from "./_components/CustomLoading";
+import { v4 as uuidv4 } from "uuid";
 
+const scriptData =
+  "Dinosaurs roamed the Earth millions of years ago! The pyramids of Egypt were built thousands of years ago. Chariot races were a popular sport in ancient Rome. The Great Wall of China is one of the longest structures ever built. The Vikings were skilled seafarers and explorers. Medieval knights fought in jousting tournaments. Christopher Columbus sailed across the Atlantic Ocean.";
+const FIREURL = "";
 function CreateNew() {
   const [formData, setFormData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [videoScript, setVideoScript] = useState();
+  const [audioFileUrl, setAudioFileUrl] = useState();
 
   const onHandleInputChange = (fieldName, fieldValue) => {
     setFormData((prev) => ({
@@ -20,7 +25,9 @@ function CreateNew() {
   };
 
   const onCreateClickHandler = () => {
-    GetVideoScript();
+    // GetVideoScript();
+    // GenerateAudioFile(scriptData);
+    GenerateAudioCaption(FIREURL);
   };
 
   // Get Video Script
@@ -29,7 +36,9 @@ function CreateNew() {
     const prompt =
       "Write a script to generate " +
       formData.duration +
-      " video on topic:  along with AI image prompt in " +
+      " video on topic: " +
+      formData.topic +
+      " along with AI image prompt in " +
       formData.imageStyle +
       " format for each scene and give me result in JSON format with imagePrompt and ContextText as field, No Plain text";
     const result = await axios
@@ -37,9 +46,44 @@ function CreateNew() {
         prompt: prompt,
       })
       .then((resp) => {
-        console.log(resp.data);
         setVideoScript(resp.data.result);
+        GenerateAudioFile(resp.data.result);
       });
+    setLoading(false);
+  };
+
+  const GenerateAudioFile = async (videoScriptData) => {
+    setLoading(true);
+    let script = "";
+    const id = uuidv4();
+
+    // videoScriptData?.forEach((item) => {
+    //   script = script + item.ContextText + " ";
+    // });
+
+    await axios
+      .post("/api/generate-audio", {
+        text: videoScriptData,
+        id: id,
+      })
+      .then((resp) => {
+        setAudioFileUrl(resp.data.result);
+      });
+
+    setLoading(false);
+  };
+
+  const GenerateAudioCaption = async (fileUrl) => {
+    setLoading(true);
+
+    await axios
+      .post("/app/generate-caption", {
+        audioFileUrl: fileUrl,
+      })
+      .then((resp) => {
+        console.log(resp.data.result);
+      });
+
     setLoading(false);
   };
 
