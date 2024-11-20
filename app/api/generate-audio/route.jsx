@@ -1,8 +1,7 @@
+import { storage } from "@/configs/FirebaseConfig";
 import textToSpeech from "@google-cloud/text-to-speech";
 import { getDownloadURL } from "firebase/storage";
 import { NextResponse } from "next/server";
-const fs = require("fs");
-const util = require("util");
 
 const client = new textToSpeech.TextToSpeechClient({
   apiKey: process.env.GOOGLE_API_KEY,
@@ -30,7 +29,5 @@ export async function POST(req) {
 
   const downloadUrl = await getDownloadURL(storageRef);
 
-  console.log(downloadUrl);
-
-  return NextResponse.json({ Result: "Success" });
+  return NextResponse.json({ Result: downloadUrl });
 }

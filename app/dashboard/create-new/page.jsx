@@ -1,16 +1,17 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
-import SelectTopic from "./_components/SelectTopic";
-import SelectStyle from "./_components/SelectStyle";
-import SelectDuration from "./_components/SelectDuration";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
-import CustomLoading from "./_components/CustomLoading";
-import { v4 as uuidv4 } from "uuid";
 import { VideoDataContext } from "@/app/_context/VideoDataContext";
+import { Button } from "@/components/ui/button";
 import { db } from "@/configs/db";
 import { VideoData } from "@/configs/schema";
 import { useUser } from "@clerk/nextjs";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import PlayerDialog from "../_components/PlayerDialog";
+import CustomLoading from "./_components/CustomLoading";
+import SelectDuration from "./_components/SelectDuration";
+import SelectStyle from "./_components/SelectStyle";
+import SelectTopic from "./_components/SelectTopic";
 
 function CreateNew() {
   const [formData, setFormData] = useState([]);
@@ -19,6 +20,9 @@ function CreateNew() {
   const [audioFileUrl, setAudioFileUrl] = useState();
   const [captions, setCaptions] = useState();
   const [imageList, setImageList] = useState();
+  const [playVideo, setPlayVideo] = useState(false);
+  const [videoId, setVideoId] = useState();
+
   const { videoData, setVideoData } = useContext(VideoDataContext);
   const { user } = useUser();
 
@@ -79,6 +83,7 @@ function CreateNew() {
     }));
 
     setAudioFileUrl(resp.data.result);
+
     resp.data.result &&
       (await GenerateAudioCaption(resp.data.result, videoScriptData));
   };
@@ -142,6 +147,8 @@ function CreateNew() {
       })
       .returning({ id: VideoData?.id });
 
+    setVideoId(result[0]?.id);
+    setPlayVideo(true);
     setLoading(false);
   };
 
@@ -164,6 +171,8 @@ function CreateNew() {
         </Button>
 
         <CustomLoading loading={loading} />
+
+        <PlayerDialog playVideo={playVideo} videoId={videoId} />
       </div>
     </div>
   );
